@@ -1,3 +1,10 @@
+## Forked from [yelog/layui-select-multiple](https://github.com/yelog/layui-select-multiple)
+更改单选下拉搜索框，移到下拉中显示。
+## 效果图
+![select](https://user-images.githubusercontent.com/1499168/129337302-d9737d66-c2b5-4ea8-b026-04b3e1535964.png)
+
+
+
 ## 为 layui 扩展的 下拉多选select
 当前layui版本：**2.4.5** （历史版本可在[release](https://github.com/yelog/layui-select-multiple/releases)中找到）  
 在线demo： [http://yelog.org/layui-select-multiple/](http://yelog.org/layui-select-multiple/)
