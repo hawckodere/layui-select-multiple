@@ -180,7 +180,7 @@ layui.define('layer', function(exports){
 
                                 //初始选中样式
                                 if (!isMulti) {
-                                    dds.eq(index).addClass(THIS).siblings().removeClass(THIS);
+                                    dds.eq(index-1).addClass(THIS).siblings().removeClass(THIS);
                                 }
 
                                 //上下定位识别
@@ -257,12 +257,27 @@ layui.define('layer', function(exports){
                                 },500)
                             } else {
                                 reElem.hasClass(CLASS+'ed') ? (
-                                    hideDown()
+                                    $(e.target).hasClass('search-input') ?  (e.stopPropagation()): (
+                                        hideDown(),
+                                        dl.find(".layui-input").val(""),
+                                        setTimeout(function () {  // 直接写focus，会失败。。
+                                            dl.find(".layui-input").focus();
+                                        },500),
+                                        dl.find('.'+NONE).remove())
                                 ) : (
                                     hide(e, true),
-                                        showDown()
+                                        showDown(),
+                                        dl.find(".layui-input").val(""),
+                                        setTimeout(function () {  // 直接写focus，会失败。。
+                                            dl.find(".layui-input").focus();
+                                        },500),
+                                        dl.find('.'+NONE).remove()
                                 );
-                                dl.find('.'+NONE).remove();
+                                //dl.find(".layui-input").val("");
+                                // setTimeout(function () {  // 直接写focus，会失败。。
+                                //     dl.find(".layui-input").focus();
+                                // },500)
+                                // dl.find('.'+NONE).remove();
                             }
                             e.stopPropagation();
                         });
@@ -461,17 +476,26 @@ layui.define('layer', function(exports){
                                 } else {
                                     input.val(othis.text());
                                     othis.addClass(THIS);
+                                        
+                                    othis.siblings().removeClass(THIS);
+                                    select.val(value).removeClass('layui-form-danger')
+                                    layui.event.call(this, MOD_NAME, 'select('+ filter +')', {
+                                        elem: select[0]
+                                        ,value: value
+                                        ,othis: reElem
+                                    });
+
+                                    hideDown(true);
                                 }
+                                // othis.siblings().removeClass(THIS);
+                                // select.val(value).removeClass('layui-form-danger')
+                                // layui.event.call(this, MOD_NAME, 'select('+ filter +')', {
+                                //     elem: select[0]
+                                //     ,value: value
+                                //     ,othis: reElem
+                                // });
 
-                                othis.siblings().removeClass(THIS);
-                                select.val(value).removeClass('layui-form-danger')
-                                layui.event.call(this, MOD_NAME, 'select('+ filter +')', {
-                                    elem: select[0]
-                                    ,value: value
-                                    ,othis: reElem
-                                });
-
-                                hideDown(true);
+                                // hideDown(true);
                             }
                             return false;
                         });
@@ -662,19 +686,32 @@ layui.define('layer', function(exports){
                                 +(isSearch ? '' : ' layui-unselect')
                                 + (disabled ? (' ' + DISABLED) : '') +'">') //禁用状态
                             ,'<i class="layui-edge"></i></div>'
-                            ,'<dl class="layui-anim layui-anim-upbit'+ (othis.find('optgroup')[0] ? ' layui-select-group' : '') +'">'
+                            ,'<dl class="layui-anim layui-anim-upbit'+ (othis.find('optgroup')[0] ? ' layui-select-group' : '') +'"' + (isSearch?'style="overflow-y: hidden;"':'') +'>'
                             ,function(options){
-                                var arr = [];
+                                var arr = [],height=247;
                                 layui.each(options, function(index, item){
                                     if(index === 0 && !item.value){
-                                        arr.push('<dd lay-value="" class="layui-select-tips">'+ (item.innerHTML || TIPS) +'</dd>');
-                                    } else if(item.tagName.toLowerCase() === 'optgroup'){
-                                        arr.push('<dt>'+ item.label +'</dt>');
-                                    } else {
-                                        arr.push('<dd lay-value="'+ item.value +'" class="'+ (value === item.value ?  THIS : '') + (item.disabled ? (' '+DISABLED) : '') +'">'+ item.innerHTML +'</dd>');
+                                        if(isSearch){
+                                            arr.push('<dd lay-value="" class="layui-select-tips" style="padding-right: 10px; margin-bottom: 5px;"><div class="'+ TITLE +'"><input class="layui-input search-input" placeholder="关键字搜索"></div></dd>');
+                                        }else{
+                                            arr.push('<dd lay-value="" class="layui-select-tips">'+ (item.innerHTML || TIPS) +'</dd>');
+                                        }
+                                    }else{
+                                        if (index ===1 && isSearch ) {
+                                            arr.push('<div  style="max-height: '+height+'px; overflow-y: auto" >')
+                                        }
+                                        if(item.tagName.toLowerCase() === 'optgroup'){
+                                            arr.push('<dt>'+ item.label +'</dt>');
+                                        } else {
+                                            arr.push('<dd lay-value="'+ item.value +'" class="'+ (value === item.value ?  THIS : '') + (item.disabled ? (' '+DISABLED) : '') +'">'+ item.innerHTML +'</dd>');
+                                        }
                                     }
+                                                                        
                                 });
                                 arr.length === 0 && arr.push('<dd lay-value="" class="'+ DISABLED +'">没有选项</dd>');
+                                if (isSearch ) {
+                                    arr.join("</div>");
+                                }
                                 return arr.join('');
                             }(othis.find('*')) +'</dl>'
                             ,'</div>'].join(''));
